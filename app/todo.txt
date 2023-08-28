@@ -1,0 +1,7 @@
+Containerize application - DONE
+Add database initializaiton in application
+Provision AKS
+Enable HTTP Application Routing
+Deploy postgres-operator
+Create db cluster
+Deploy demo app to AKS
