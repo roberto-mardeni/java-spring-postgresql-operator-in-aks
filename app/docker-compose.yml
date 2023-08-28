@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=admin'
+      - 'POSTGRES_USER=postgres'
+    ports:
+      - 5432:5432
+  app:
+    image: 'java-postgres:latest'
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase'
+      - 'SPRING_DATASOURCE_USERNAME=postgres'
+      - 'SPRING_DATASOURCE_PASSWORD=admin'
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    profiles:
+      - "full"
