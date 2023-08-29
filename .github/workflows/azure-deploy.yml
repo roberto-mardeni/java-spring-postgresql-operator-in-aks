@@ -15,7 +15,7 @@ on:
           - westus2
 
 env:
-  RESOURCEGROUPNAME: azure-containers-demo-rg
+  RESOURCEGROUPNAME: java-postgres
   LOCATION: ${{ inputs.location }}
   REGISTRYSKU: "Standard"
   REGISTRYNAME: "javapostgres13579"
@@ -33,16 +33,16 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Create Resources
-        continue-on-error: true
+        continue-on-error: false
         run: |
           if [ $(az group exists --name ${{ env.RESOURCEGROUPNAME }}) = false ]; then
-            az group create -g ${{ env.RESOURCEGROUPNAME }} -l ${{ env.LOCATION }} --yes
+            az group create -g ${{ env.RESOURCEGROUPNAME }} -l ${{ env.LOCATION }}
           fi
           az acr create -n ${{ env.REGISTRYNAME }} -g ${{ env.RESOURCEGROUPNAME }} --sku ${{ env.REGISTRYSKU }} --admin-enabled true
           az acr login -n ${{ env.REGISTRYNAME }}
 
       - name: Build and Push Docker Image
-        continue-on-error: true
+        continue-on-error: false
         run: |
           pushd app
           docker build -t ${{ env.REGISTRYNAME }}.azurecr.io/java-postgres:latest .
