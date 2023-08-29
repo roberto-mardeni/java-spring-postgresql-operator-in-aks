@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.Customer;
-import com.example.demo.CustomerRepository;
-
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
