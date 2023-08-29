@@ -45,9 +45,11 @@ jobs:
         continue-on-error: false
         run: |
           pushd app
-          docker build -t ${{ env.REGISTRYNAME }}.azurecr.io/java-postgres:latest .
-          docker push ${{ env.REGISTRYNAME }}.azurecr.io/java-postgres:latest
+          az acr build --image java-postgres:latest --registry ${{ env.REGISTRYNAME }} --file Dockerfile .
           popd
+        #   docker build -t ${{ env.REGISTRYNAME }}.azurecr.io/java-postgres:latest .
+        #   docker push ${{ env.REGISTRYNAME }}.azurecr.io/java-postgres:latest
+        #   popd
 
       - name: Build and Push Docker Image
         continue-on-error: true
