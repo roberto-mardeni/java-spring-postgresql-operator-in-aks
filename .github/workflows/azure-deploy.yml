@@ -41,10 +41,16 @@ jobs:
           az acr create -n ${{ env.REGISTRYNAME }} -g ${{ env.RESOURCEGROUPNAME }} --sku ${{ env.REGISTRYSKU }} --admin-enabled true
           az acr login -n ${{ env.REGISTRYNAME }}
 
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'oracle'
+          java-version: '17'
+
       - name: Build and Push Docker Image
         continue-on-error: false
         run: |
           pushd app
+          mvn package
           az acr build --image java-postgres:latest --registry ${{ env.REGISTRYNAME }} --file Dockerfile .
           popd
         #   docker build -t ${{ env.REGISTRYNAME }}.azurecr.io/java-postgres:latest .
