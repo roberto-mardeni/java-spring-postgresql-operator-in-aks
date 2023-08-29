@@ -55,10 +55,10 @@ jobs:
           helm push java-postgres-0.1.0.tgz oci://${{ env.REGISTRYNAME }}.azurecr.io/helm
           popd
   
-  deploy:
-    name: Deploy
-    needs: build
-    runs-on: ubuntu-latest
+#   deploy:
+#     name: Deploy
+#     needs: build
+#     runs-on: ubuntu-latest
 #   cleanup:
 #     name: Cleanup
 #     needs: deploy

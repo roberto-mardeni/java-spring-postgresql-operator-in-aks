@@ -1,0 +1,12 @@
+Containerize application - DONE
+Add database initializaiton in application - DONE
+Provision AKS - DONE
+Enable HTTP Application Routing - DONE
+Deploy postgres-operator - DONE
+    helm install postgres-operator postgres-operator-charts/postgres-operator
+    az aks show --resource-group java-postgresql --name java-postgres --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o table
+    helm install -f zalando-postgres-operator-values.yml postgres-operator-ui postgres-operator-ui-charts/postgres-operator-ui
+Create db cluster - DONE
+Get db cluster secret - DONE
+Push image to registry - DONE
+Deploy demo app to AKS - DONE
