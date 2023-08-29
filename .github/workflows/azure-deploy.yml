@@ -25,6 +25,8 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
+
       - name: Azure authentication
         uses: azure/login@v1
         with:
