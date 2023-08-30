@@ -88,12 +88,12 @@ jobs:
           az aks create -g ${{ env.RESOURCEGROUPNAME }} -n ${{ env.CLUSTERNAME }} --attach-acr ${{ env.REGISTRYNAME }} --enable-managed-identity --node-count 1 --enable-addons http_application_routing,monitoring --enable-cluster-autoscaler --min-count 1 --max-count 3 --generate-ssh-keys
           
           echo 'Waiting for AKS cluster to be ready'
-          sleep 60
+          sleep 120
 
           echo 'Adding repo for postgres-operator'
           helm repo add postgres-operator-charts https://opensource.zalando.com/postgres-operator/charts/postgres-operator
           echo 'Installing the postgres-operator'
-          helm install postgres-operator postgres-operator-charts/postgres-operator
+          helm upgrade -i --wait postgres-operator postgres-operator-charts/postgres-operator
           
           echo 'Getting the DNS Zone Name'
           HTTPApplicationRoutingZoneName=$(az aks show -g ${{ env.RESOURCEGROUPNAME }} -n ${{ env.CLUSTERNAME }} --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o tsv)
@@ -105,7 +105,7 @@ jobs:
           echo 'Adding repo for postgres-operator-ui'
           helm repo add postgres-operator-ui-charts https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui
           echo 'Installing the postgres-operator-ui'
-          helm install -f zalando-postgres-operator-values.yml postgres-operator-ui postgres-operator-ui-charts/postgres-operator-ui
+          helm upgrade -i --wait -f zalando-postgres-operator-values.yml postgres-operator-ui postgres-operator-ui-charts/postgres-operator-ui
 
           echo 'Creating db cluster - PENDING'
 
