@@ -1,11 +1,11 @@
 envs:
   # IMPORTANT: While operator chart and UI chart are independent, this is the interface between
   # UI and operator API. Insert the service name of the operator API here!
-  appUrl: "http://postgres-operator-ui.[HTTPApplicationRoutingZoneName]"
+  appUrl: "http://postgres-operator-ui.HTTPApplicationRoutingZoneName"
 ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: addon-http-application-routing
   hosts:
-    - host: postgres-operator-ui.[HTTPApplicationRoutingZoneName]
+    - host: postgres-operator-ui.HTTPApplicationRoutingZoneName
       paths: [""]
