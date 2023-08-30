@@ -108,7 +108,11 @@ jobs:
           helm install -f zalando-postgres-operator-values.yml postgres-operator-ui postgres-operator-ui-charts/postgres-operator-ui
 
           echo 'Creating db cluster - PENDING'
-          echo 'Deploying demo app to AKS - PENDING'
+
+          echo 'Pulling helm chart'
+          helm pull oci://${{ env.REGISTRYNAME }}.azurecr.io/helm/java-postgres --version 0.1.0
+          echo 'Deploying demo app to AKS'
+          helm install java-postgres java-postgres-0.1.0.tgz
 
 #   cleanup:
 #     name: Cleanup
