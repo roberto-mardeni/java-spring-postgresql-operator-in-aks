@@ -90,6 +90,8 @@ jobs:
           echo 'Waiting for AKS cluster to be ready'
           sleep 120
 
+          az aks get-credentials -g ${{ env.RESOURCEGROUPNAME }} -n ${{ env.CLUSTERNAME }}
+
       - name: Deploy Postgres Operator
         continue-on-error: false
         run: |
