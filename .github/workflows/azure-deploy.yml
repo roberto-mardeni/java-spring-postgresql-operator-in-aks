@@ -51,7 +51,6 @@ jobs:
         continue-on-error: false
         run: |
           pushd app
-          mvn package
           az acr build --image java-postgres:latest --registry ${{ env.REGISTRYNAME }} --file Dockerfile .
           popd
 
