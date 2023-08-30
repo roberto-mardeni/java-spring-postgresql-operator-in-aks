@@ -59,9 +59,13 @@ jobs:
         run: |
           pushd charts/java-postgres
           helm package .
-          helm push java-postgres-0.1.0.tgz oci://${{ env.REGISTRYNAME }}.azurecr.io/helm
           popd
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: charts
+          path: charts/java-postgres/java-postgres-0.1.0.tgz
+  
       - uses: actions/upload-artifact@v3
         with:
           name: templates
@@ -118,25 +122,26 @@ jobs:
         run: |
           kubectl apply -f clusterdb.yml
 
+      - uses: actions/download-artifact@v3
+        with:
+          name: charts
+
       - name: Deploy Java App
         continue-on-error: false
         run: |
-          echo 'Pulling helm chart'
-          helm pull oci://${{ env.REGISTRYNAME }}.azurecr.io/helm/java-postgres --version 0.1.0
-          echo 'Deploying demo app to AKS'
-          helm install java-postgres java-postgres-0.1.0.tgz
+          helm upgrade -i --wait java-postgres java-postgres-0.1.0.tgz
 
-#   cleanup:
-#     name: Cleanup
-#     needs: deploy
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Azure authentication
-#         uses: azure/login@v1
-#         with:
-#           creds: ${{ secrets.AZURE_CREDENTIALS }}
+  # cleanup:
+  #   name: Cleanup
+  #   needs: deploy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Azure authentication
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-#       - name: Delete Resource Group
-#         continue-on-error: true
-#         run: |
-#           az group delete -g ${{ env.RESOURCEGROUPNAME }} --yes
+  #     - name: Delete Resource Group
+  #       continue-on-error: true
+  #       run: |
+  #         az group delete -g ${{ env.RESOURCEGROUPNAME }} --yes
