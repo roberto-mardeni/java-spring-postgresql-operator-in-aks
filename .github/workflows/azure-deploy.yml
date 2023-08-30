@@ -78,7 +78,7 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: operator-template
+          name: templates
 
       - name: Create AKS Cluster
         continue-on-error: false
