@@ -104,7 +104,8 @@ jobs:
           echo "HTTPApplicationRoutingZoneName: $HTTPApplicationRoutingZoneName"
 
           echo 'Creating values file from template'
-          sed -e "s/HTTPApplicationRoutingZoneName/$HTTPApplicationRoutingZoneName/g" templates/zalando-postgres-operator.yml > zalando-postgres-operator-values.yml
+          ls -R
+          sed -e "s/HTTPApplicationRoutingZoneName/$HTTPApplicationRoutingZoneName/g" zalando-postgres-operator.yml > zalando-postgres-operator-values.yml
           cat zalando-postgres-operator-values.yml
 
           echo 'Adding repo for postgres-operator-ui'
@@ -115,7 +116,7 @@ jobs:
       - name: Create Postgres Cluster
         continue-on-error: false
         run: |
-          kubectl apply -f templates/clusterdb.yml
+          kubectl apply -f clusterdb.yml
 
       - name: Deploy Java App
         continue-on-error: false
