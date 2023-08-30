@@ -19,6 +19,7 @@ env:
   LOCATION: ${{ inputs.location }}
   REGISTRYSKU: "Standard"
   REGISTRYNAME: "javapostgres13579"
+  CLUSTERNAME: java-postgres
 
 jobs:
   build:
@@ -43,8 +44,8 @@ jobs:
 
       - uses: actions/setup-java@v3
         with:
-          distribution: 'oracle'
-          java-version: '17'
+          distribution: "oracle"
+          java-version: "17"
 
       - name: Build and Push Docker Image
         continue-on-error: false
@@ -53,22 +54,58 @@ jobs:
           mvn package
           az acr build --image java-postgres:latest --registry ${{ env.REGISTRYNAME }} --file Dockerfile .
           popd
-        #   docker build -t ${{ env.REGISTRYNAME }}.azurecr.io/java-postgres:latest .
-        #   docker push ${{ env.REGISTRYNAME }}.azurecr.io/java-postgres:latest
-        #   popd
 
-      - name: Build and Push Docker Image
+      - name: Package and Push Helm Chart
         continue-on-error: true
         run: |
           pushd charts/java-postgres
           helm package .
           helm push java-postgres-0.1.0.tgz oci://${{ env.REGISTRYNAME }}.azurecr.io/helm
           popd
-  
-#   deploy:
-#     name: Deploy
-#     needs: build
-#     runs-on: ubuntu-latest
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: operator-template
+          path: deploy/zalando-postgres-operator.template.yml
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure authentication
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: operator-template
+
+      - name: Create Resources
+        continue-on-error: true
+        run: |
+          # create AKS cluster
+          az aks create -g ${{ env.RESOURCEGROUPNAME }} -n ${{ env.CLUSTERNAME }} --attach-acr ${{ env.REGISTRYNAME }} --enable-managed-identity --node-count 1 --enable-addons http_application_routing,monitoring --enable-cluster-autoscaler --generate-ssh-keys
+          
+          # add repo for postgres-operator
+          helm repo add postgres-operator-charts https://opensource.zalando.com/postgres-operator/charts/postgres-operator
+          # install the postgres-operator
+          helm install postgres-operator postgres-operator-charts/postgres-operator
+          
+          # Get the DNS Zone Name
+          HTTPApplicationRoutingZoneName=$(az aks show --resource-group java-postgresql --name java-postgres --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o tsv)
+
+          # Create values file from template
+          sed -e "s/[HTTPApplicationRoutingZoneName]/$HTTPApplicationRoutingZoneName/g" zalando-postgres-operator.template.yml > zalando-postgres-operator-values.yml
+
+          # add repo for postgres-operator-ui
+          helm repo add postgres-operator-ui-charts https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui
+          # install the postgres-operator-ui
+          helm install -f zalando-postgres-operator-values.yml postgres-operator-ui postgres-operator-ui-charts/postgres-operator-ui
+
+          # Create db cluster - DONE
+          # Deploy demo app to AKS - DONE
+
 #   cleanup:
 #     name: Cleanup
 #     needs: deploy
