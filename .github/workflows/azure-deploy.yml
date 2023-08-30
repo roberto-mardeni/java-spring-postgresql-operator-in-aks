@@ -84,27 +84,31 @@ jobs:
       - name: Create Resources
         continue-on-error: false
         run: |
-          # create AKS cluster
+          echo 'Creating AKS cluster'
           az aks create -g ${{ env.RESOURCEGROUPNAME }} -n ${{ env.CLUSTERNAME }} --attach-acr ${{ env.REGISTRYNAME }} --enable-managed-identity --node-count 1 --enable-addons http_application_routing,monitoring --enable-cluster-autoscaler --min-count 1 --max-count 3 --generate-ssh-keys
           
-          # add repo for postgres-operator
+          echo 'Waiting for AKS cluster to be ready'
+          sleep 60
+
+          echo 'Adding repo for postgres-operator'
           helm repo add postgres-operator-charts https://opensource.zalando.com/postgres-operator/charts/postgres-operator
-          # install the postgres-operator
+          echo 'Installing the postgres-operator'
           helm install postgres-operator postgres-operator-charts/postgres-operator
           
-          # Get the DNS Zone Name
-          HTTPApplicationRoutingZoneName=$(az aks show --resource-group java-postgresql --name java-postgres --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o tsv)
+          echo 'Getting the DNS Zone Name'
+          HTTPApplicationRoutingZoneName=$(az aks show -g ${{ env.RESOURCEGROUPNAME }} -n ${{ env.CLUSTERNAME }} --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o tsv)
+          echo "HTTPApplicationRoutingZoneName: $HTTPApplicationRoutingZoneName"
 
-          # Create values file from template
+          echo 'Creating values file from template'
           sed -e "s/[HTTPApplicationRoutingZoneName]/$HTTPApplicationRoutingZoneName/g" zalando-postgres-operator.template.yml > zalando-postgres-operator-values.yml
 
-          # add repo for postgres-operator-ui
+          echo 'Adding repo for postgres-operator-ui'
           helm repo add postgres-operator-ui-charts https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui
-          # install the postgres-operator-ui
+          echo 'Installing the postgres-operator-ui'
           helm install -f zalando-postgres-operator-values.yml postgres-operator-ui postgres-operator-ui-charts/postgres-operator-ui
 
-          # Create db cluster - DONE
-          # Deploy demo app to AKS - DONE
+          echo 'Creating db cluster - PENDING'
+          echo 'Deploying demo app to AKS - PENDING'
 
 #   cleanup:
 #     name: Cleanup
