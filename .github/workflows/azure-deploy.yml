@@ -81,7 +81,7 @@ jobs:
         with:
           name: operator-template
 
-      - name: Create Resources
+      - name: Create AKS Cluster
         continue-on-error: false
         run: |
           echo 'Creating AKS cluster'
@@ -90,6 +90,9 @@ jobs:
           echo 'Waiting for AKS cluster to be ready'
           sleep 120
 
+      - name: Deploy Postgres Operator
+        continue-on-error: false
+        run: |
           echo 'Adding repo for postgres-operator'
           helm repo add postgres-operator-charts https://opensource.zalando.com/postgres-operator/charts/postgres-operator
           echo 'Installing the postgres-operator'
@@ -107,8 +110,14 @@ jobs:
           echo 'Installing the postgres-operator-ui'
           helm upgrade -i --wait -f zalando-postgres-operator-values.yml postgres-operator-ui postgres-operator-ui-charts/postgres-operator-ui
 
+      - name: Create Postgres Cluster
+        continue-on-error: false
+        run: |
           echo 'Creating db cluster - PENDING'
 
+      - name: Deploy Java App
+        continue-on-error: false
+        run: |
           echo 'Pulling helm chart'
           helm pull oci://${{ env.REGISTRYNAME }}.azurecr.io/helm/java-postgres --version 0.1.0
           echo 'Deploying demo app to AKS'
