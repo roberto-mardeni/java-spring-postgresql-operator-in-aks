@@ -64,8 +64,8 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: operator-template
-          path: deploy/zalando-postgres-operator.template.yml
+          name: templates
+          path: deploy/
   deploy:
     name: Deploy
     needs: build
@@ -104,7 +104,7 @@ jobs:
           echo "HTTPApplicationRoutingZoneName: $HTTPApplicationRoutingZoneName"
 
           echo 'Creating values file from template'
-          sed -e "s/HTTPApplicationRoutingZoneName/$HTTPApplicationRoutingZoneName/g" operator-template/zalando-postgres-operator.template.yml > zalando-postgres-operator-values.yml
+          sed -e "s/HTTPApplicationRoutingZoneName/$HTTPApplicationRoutingZoneName/g" templates/zalando-postgres-operator.yml > zalando-postgres-operator-values.yml
           cat zalando-postgres-operator-values.yml
 
           echo 'Adding repo for postgres-operator-ui'
@@ -115,7 +115,7 @@ jobs:
       - name: Create Postgres Cluster
         continue-on-error: false
         run: |
-          echo 'Creating db cluster - PENDING'
+          kubectl apply -f templates/clusterdb.yml
 
       - name: Deploy Java App
         continue-on-error: false
