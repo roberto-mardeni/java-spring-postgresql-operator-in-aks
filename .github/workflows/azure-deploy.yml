@@ -104,7 +104,7 @@ jobs:
           echo "HTTPApplicationRoutingZoneName: $HTTPApplicationRoutingZoneName"
 
           echo 'Creating values file from template'
-          sed -e "s/HTTPApplicationRoutingZoneName/$HTTPApplicationRoutingZoneName/g" zalando-postgres-operator.template.yml > zalando-postgres-operator-values.yml
+          sed -e "s/HTTPApplicationRoutingZoneName/$HTTPApplicationRoutingZoneName/g" operator-template/zalando-postgres-operator.template.yml > zalando-postgres-operator-values.yml
           cat zalando-postgres-operator-values.yml
 
           echo 'Adding repo for postgres-operator-ui'
