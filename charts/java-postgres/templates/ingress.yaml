@@ -22,5 +22,5 @@ spec:
               service:
                 name: java-postgres
                 port: 
-                  number: 80
+                  number: 8080
 {{- end }}
