@@ -134,17 +134,17 @@ jobs:
           helm upgrade -i --wait --set image.repository="${{ env.REGISTRYNAME }}.azurecr.io/java-postgres" --set ingress.host="java-postgres.$HTTPApplicationRoutingZoneName"  java-postgres java-postgres-0.1.0.tgz
           echo "Endpoint: http://java-postgres.$HTTPApplicationRoutingZoneName/customer/"
 
-  # cleanup:
-  #   name: Cleanup
-  #   needs: deploy
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Azure authentication
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+  cleanup:
+    name: Cleanup
+    needs: deploy
+    runs-on: ubuntu-latest
+    environment: 'cleanup'
+    steps:
+      - name: Azure authentication
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  #     - name: Delete Resource Group
-  #       continue-on-error: true
-  #       run: |
-  #         az group delete -g ${{ env.RESOURCEGROUPNAME }} --yes
+      - name: Delete Resource Group
+        continue-on-error: true
+        run: az group delete -g ${{ env.RESOURCEGROUPNAME }} --yes
