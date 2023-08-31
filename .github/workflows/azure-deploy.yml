@@ -131,7 +131,7 @@ jobs:
         run: |
           echo 'Getting the DNS Zone Name'
           HTTPApplicationRoutingZoneName=$(az aks show -g ${{ env.RESOURCEGROUPNAME }} -n ${{ env.CLUSTERNAME }} --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName -o tsv)
-          helm upgrade -i --wait --set image.repository="${{ env.REGISTRYNAME }}.azurecr.io/java-postgres" --set ingress.hosts\[0\].host="java-postgres.$HTTPApplicationRoutingZoneName"  java-postgres java-postgres-0.1.0.tgz
+          helm upgrade -i --wait --set image.repository="${{ env.REGISTRYNAME }}.azurecr.io/java-postgres" --set ingress.host="java-postgres.$HTTPApplicationRoutingZoneName"  java-postgres java-postgres-0.1.0.tgz
 
   # cleanup:
   #   name: Cleanup
